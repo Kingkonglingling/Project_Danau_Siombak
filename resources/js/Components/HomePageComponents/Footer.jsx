@@ -5,7 +5,7 @@ export default function Footer({ MapPin }) {
 
         <>
         
-        <footer id="contact" className="bg-gray-900 text-white py-12">
+        <footer id="contact" className="bg-gray-900 text-white py-12 backdrop-blur-sm">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                     <div className="col-span-2 md:col-span-1 space-y-3">
@@ -41,7 +41,7 @@ export default function Footer({ MapPin }) {
                     </div>
                 </div>
                 <div className="mt-8 pt-6 border-t border-gray-700 text-center text-sm text-gray-500">
-                    &copy; {new Date().getFullYear()} Danau Siombak Tourism. Dibuat dengan Inertia & React.
+                    &copy; {new Date().getFullYear()} Danau Siombak Tourism.
                 </div>
             </div>
         </footer>

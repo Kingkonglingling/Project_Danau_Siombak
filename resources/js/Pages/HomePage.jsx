@@ -1,4 +1,5 @@
 import { MapPin, Sailboat, Camera, Fish, Menu, Send, MessageCircle } from 'lucide-react';
+import { Head } from '@inertiajs/react';
 
 import Navbar from '../Components/HomePageComponents/Navbar';
 import HeroSection from '../Components/HomePageComponents/HeroSection';
@@ -15,7 +16,8 @@ export default function HomePage({ auth }) {
     return (
         <>
             {/* Title Placeholder (was <Head title="..."> from Inertia) */}
-            <title>Wisata Danau Siombak</title>
+            <Head title="Wisata Danau Siombak" />
+            {/* <title>Wisata Danau Siombak</title> */}
             <div className="min-h-screen bg-gray-50 font-sans antialiased">
 
                 {/* Navbar */}

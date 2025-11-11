@@ -5,10 +5,10 @@ export default function GallerySection() {
 
  // Array dummy untuk galeri
     const galleryImages = [
-        'https://placehold.co/600x400/0044A5/FFFFFF?text=Pemandangan+Danau',
-        'https://placehold.co/400x600/0077B6/FFFFFF?text=Perahu+Tradisional',
-        'https://placehold.co/800x500/00A8E8/FFFFFF?text=Area+Memancing',
-        'https://placehold.co/500x700/40916C/FFFFFF?text=Mangrove+Siombak',
+        'https://media.istockphoto.com/id/1483165116/id/foto/danau-sky.jpg?s=612x612&w=0&k=20&c=VtHx_S1lm8_hlDm5w8PZx5ry_N-C0RGkw56l6UUiYiM=',
+        'https://media.istockphoto.com/id/1450645250/id/foto/matahari-terbit-di-waduk.jpg?s=612x612&w=0&k=20&c=jzdD-TBpj2cAn-JmShbMdtwljkw70_4pxsh4CMi5kEo=',
+        'https://media.istockphoto.com/id/2210931004/id/foto/danau-buatan-dengan-pemandangan-gunung-di-pagi-hari-lanskap-pedesaan-di-mojokerto-indonesia.jpg?s=612x612&w=0&k=20&c=bHOdgvQFJtUz655sg3QgeWIoIVnu3jtjKwkO15w0gV0=',
+        'https://media.istockphoto.com/id/1299775260/id/foto/danau-jatiluhur-jawa-barat.jpg?s=612x612&w=0&k=20&c=EtlWm7DxZ-noZ0FJ2jKvpMK6FNsof-20oNgb0reSzmQ=',
     ];
 
     return (

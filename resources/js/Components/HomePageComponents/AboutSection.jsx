@@ -27,10 +27,10 @@ export default function AboutSection( {MapPin} ) {
                         </div>
                         <div className="relative overflow-hidden rounded-2xl shadow-2xl">
                             <img
-                                src="https://placehold.co/700x450/40916C/FFFFFF?text=Pintu+Masuk+Wisata"
+                                src="https://media.istockphoto.com/id/1286474249/id/foto/surealis.jpg?s=612x612&w=0&k=20&c=Q1fnMpHqSe9RjhlyDy8b7jOlUsk7oVOwU0X5VaGNZIU="
                                 alt="Pintu Masuk Wisata Danau Siombak"
                                 className="w-full h-full object-cover transition duration-500 hover:scale-105"
-                                onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/700x450/40916C/FFFFFF?text=Pintu+Masuk+Wisata" }}
+                                onError={(e) => { e.target.onerror = null; e.target.src = "https://media.istockphoto.com/id/1286474249/id/foto/surealis.jpg?s=612x612&w=0&k=20&c=Q1fnMpHqSe9RjhlyDy8b7jOlUsk7oVOwU0X5VaGNZIU=" }}
                             />
                         </div>
                     </div>
