@@ -2,6 +2,7 @@ import ApplicationLogo from "@/Components/ApplicationLogo";
 import Swal from "sweetalert2";
 import { Link, usePage, router } from "@inertiajs/react";
 import { useState } from "react";
+import { BarChart3, ListChecks } from "lucide-react";
 
 export default function AuthenticatedLayout({ children }) {
     const user = usePage().props.auth.user;
@@ -180,6 +181,9 @@ function SidebarNav({
     mobile = false,
     onNavigate = () => {},
 }) {
+    // helper: OR beberapa pattern
+    const isActive = (...patterns) => patterns.some((p) => route().current(p));
+
     return (
         <nav className="space-y-6">
             <div>
@@ -205,6 +209,32 @@ function SidebarNav({
                     onClick={onNavigate}
                 >
                     Package Ticket
+                </SideItem>
+            </div>
+
+            <div>
+                <SectionTitle collapsed={collapsed}>Survey</SectionTitle>
+                <SideItem
+                    href={route("dashboard.survey.insights")}
+                    active={route().current("dashboard.survey.insights")}
+                    icon={BarChart3}
+                    collapsed={collapsed}
+                    onClick={onNavigate}
+                >
+                    Survey Insights
+                </SideItem>
+                <SideItem
+                    href={route("dashboard.survey.questions.index")}
+                    active={isActive(
+                        "dashboard.survey.questions.*",
+                        "dashboard.survey.questions.answers",
+                        "dashboard.survey.questions.answers.*"
+                    )}
+                    icon={ListChecks}
+                    collapsed={collapsed}
+                    onClick={onNavigate}
+                >
+                    Survey Questions
                 </SideItem>
             </div>
         </nav>
