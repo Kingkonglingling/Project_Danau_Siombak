@@ -37,7 +37,9 @@ class AdminOrderController extends Controller
     public function create()
     {
         return Inertia::render('Admin/Orders/Form', [
-            'packages' => Package::select('id', 'title')->get(),
+            'packages' => Package::select('id', 'title', 'adult_price', 'child_price')
+                ->orderBy('title')
+                ->get(),
         ]);
     }
 

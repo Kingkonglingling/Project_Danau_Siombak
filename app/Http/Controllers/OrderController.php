@@ -58,11 +58,9 @@ class OrderController extends Controller
                 'id'                  => $order->id,
                 'order_code'          => $order->order_code,
                 'total_price'         => $order->total_price,
+                'adult_count'         => $order->adult_count,
+                'child_count'         => $order->child_count,
                 'midtrans_snap_token' => $order->midtrans_snap_token,
-                'buyer_name'          => $order->buyer_name,
-            ],
-            'midtrans' => [
-                'client_key' => config('services.midtrans.client_key'),
             ],
         ]);
     }
