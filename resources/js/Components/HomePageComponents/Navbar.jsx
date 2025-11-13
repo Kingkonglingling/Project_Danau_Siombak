@@ -108,10 +108,10 @@ export default function Navbar({ Sailboat, Menu }) {
                         <NavLink href="#chatbot">Panduan AI</NavLink>
                         <NavLink href="/homepage/survey">Survey</NavLink>
                         <a
-                            href="#contact"
+                            href="/paket"
                             className="ml-2 inline-flex items-center justify-center rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
                         >
-                            Kunjungi Sekarang
+                            Lihat Paket
                         </a>
                     </div>
 
@@ -167,11 +167,11 @@ export default function Navbar({ Sailboat, Menu }) {
                     </NavLink>
 
                     <a
-                        href="#contact"
+                        href="/paket"
                         onClick={() => setIsMenuOpen(false)}
                         className="block w-full text-center mt-3 px-4 py-2 bg-sky-600 text-white text-base font-medium rounded-lg hover:bg-sky-700 transition-colors shadow"
                     >
-                        Kunjungi Sekarang
+                        Lihat Paket
                     </a>
                 </div>
             </div>
