@@ -11,6 +11,8 @@ export default function Form({ package: pkg }) {
         description: pkg?.description ?? "",
         image: null,
         whatsapp_number: pkg?.whatsapp_number ?? "",
+        adult_price: pkg?.adult_price ?? "",
+        child_price: pkg?.child_price ?? "",
         _method: pkg ? "put" : undefined,
     });
 
@@ -259,6 +261,48 @@ export default function Form({ package: pkg }) {
                             >
                                 Tes link WA
                             </a>
+                        )}
+                    </div>
+
+                    {/* Harga Dewasa */}
+                    <div>
+                        <label className="mb-1 block text-sm font-medium text-slate-700">
+                            Harga Dewasa (per orang)
+                        </label>
+                        <input
+                            type="number"
+                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"
+                            placeholder="contoh: 100000"
+                            value={data.adult_price}
+                            onChange={(e) =>
+                                setData("adult_price", e.target.value)
+                            }
+                        />
+                        {errors.adult_price && (
+                            <p className="mt-1 text-sm text-red-600">
+                                {errors.adult_price}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Harga Anak (opsional) */}
+                    <div>
+                        <label className="mb-1 block text-sm font-medium text-slate-700">
+                            Harga Anak (opsional, per orang)
+                        </label>
+                        <input
+                            type="number"
+                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"
+                            placeholder="kosongkan kalau sama dengan dewasa"
+                            value={data.child_price ?? ""}
+                            onChange={(e) =>
+                                setData("child_price", e.target.value)
+                            }
+                        />
+                        {errors.child_price && (
+                            <p className="mt-1 text-sm text-red-600">
+                                {errors.child_price}
+                            </p>
                         )}
                     </div>
 

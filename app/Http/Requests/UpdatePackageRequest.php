@@ -26,6 +26,8 @@ class UpdatePackageRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'image' => ['nullable', 'image', 'max:2048'],
             'whatsapp_number' => ['required', 'string', 'max:25'],
+            'adult_price' => ['required', 'integer', 'min:0'],
+            'child_price' => ['nullable', 'integer', 'min:0'],
         ];
     }
 }

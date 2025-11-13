@@ -186,6 +186,7 @@ function SidebarNav({
 
     return (
         <nav className="space-y-6">
+            {/* Overview */}
             <div>
                 <SectionTitle collapsed={collapsed}>Overview</SectionTitle>
                 <SideItem
@@ -199,8 +200,9 @@ function SidebarNav({
                 </SideItem>
             </div>
 
+            {/* E-Ticketing */}
             <div>
-                <SectionTitle collapsed={collapsed}>Content</SectionTitle>
+                <SectionTitle collapsed={collapsed}>E-Ticketing</SectionTitle>
                 <SideItem
                     href={route("dashboard.package.index")}
                     active={route().current("dashboard.package.*")}
@@ -210,8 +212,30 @@ function SidebarNav({
                 >
                     Package Ticket
                 </SideItem>
+
+                <SideItem
+                    href={route("dashboard.orders.index")}
+                    active={route().current("dashboard.orders.*")}
+                    icon={ReceiptIcon}
+                    collapsed={collapsed}
+                    onClick={onNavigate}
+                >
+                    Orders
+                </SideItem>
+
+                {/* 🔹 Menu baru: Check-in */}
+                <SideItem
+                    href={route("dashboard.checkin.index")}
+                    active={route().current("dashboard.checkin.index")}
+                    icon={QrIcon}
+                    collapsed={collapsed}
+                    onClick={onNavigate}
+                >
+                    Check-in
+                </SideItem>
             </div>
 
+            {/* Survey */}
             <div>
                 <SectionTitle collapsed={collapsed}>Survey</SectionTitle>
                 <SideItem
@@ -337,6 +361,40 @@ function TicketIcon({ className }) {
             <path d="M3 9h18v6H3z" />
             <path d="M7 9v6M17 9v6" />
             <path d="M3 12a2 2 0 1 0 0 0" />
+        </svg>
+    );
+}
+
+// 🔹 Icon baru: Receipt / Orders
+function ReceiptIcon({ className }) {
+    return (
+        <svg
+            viewBox="0 0 24 24"
+            className={className}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+        >
+            <path d="M7 3h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V5a2 2 0 0 1 2-2z" />
+            <path d="M9 8h6M9 12h4" />
+        </svg>
+    );
+}
+
+function QrIcon({ className }) {
+    return (
+        <svg
+            viewBox="0 0 24 24"
+            className={className}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+        >
+            <rect x="3" y="3" width="6" height="6" />
+            <rect x="15" y="3" width="6" height="6" />
+            <rect x="3" y="15" width="6" height="6" />
+            <path d="M15 15h2v2h-2z" />
+            <path d="M21 15h-2v4h-4v2" />
         </svg>
     );
 }

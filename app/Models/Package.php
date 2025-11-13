@@ -7,7 +7,20 @@ use Illuminate\Support\Str;
 
 class Package extends Model
 {
-    protected $fillable = ['title', 'slug', 'description', 'image_path', 'whatsapp_number'];
+    protected $fillable = [
+        'title',
+        'slug',
+        'description',
+        'image_path',
+        'whatsapp_number',
+        'adult_price',
+        'child_price',
+    ];
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 
     protected static function booted()
     {
