@@ -17,6 +17,11 @@ class Package extends Model
         'child_price',
     ];
 
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
     protected static function booted()
     {
         static::creating(function ($pkg) {
