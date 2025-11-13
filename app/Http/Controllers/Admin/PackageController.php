@@ -24,6 +24,8 @@ class PackageController extends Controller
                 'slug' => $p->slug,
                 'image_url' => $p->image_path ? Storage::url($p->image_path) : null,
                 'wa' => $p->whatsapp_number,
+                'adult_price' => $p->adult_price,
+                'child_price' => $p->child_price,
                 'created_at' => $p->created_at->toDateString(),
             ];
         });
@@ -72,6 +74,8 @@ class PackageController extends Controller
                 'description' => $package->description,
                 'image_url' => $package->image_path ? Storage::url($package->image_path) : null,
                 'whatsapp_number' => $package->whatsapp_number,
+                'adult_price' => $package->adult_price,
+                'child_price' => $package->child_price,
             ]
         ]);
     }
