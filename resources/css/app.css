@@ -5,3 +5,22 @@
 * {
     scroll-behavior: smooth;
 }
+
+.rich-text ul {
+    list-style-type: disc;
+    margin-left: 1.25rem; /* biar agak menjorok */
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.rich-text ol {
+    list-style-type: decimal;
+    margin-left: 1.25rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+/* optional: spasi antara item */
+.rich-text li {
+    margin-bottom: 0.125rem;
+}
