@@ -1,22 +1,23 @@
 <?php
 
-use App\Http\Controllers\Admin\PackageController;
-use App\Http\Controllers\Admin\SatisfactionQuestionController;
-use App\Http\Controllers\Admin\SurveyAnalyticsController;
-use App\Http\Controllers\Admin\AdminOrderController;
-use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-
-use App\Http\Controllers\HomePageController;
-use App\Http\Controllers\Public\SurveyController;
-
-// ===== Tambahan controller untuk fitur e-ticketing =====
-use App\Http\Controllers\Front\PackageController as FrontPackageController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\TicketController;
-use App\Http\Controllers\MidtransCallbackController;
+use App\Http\Controllers\ChatBotController;
 use App\Http\Controllers\CheckInController;
+use App\Http\Controllers\ProfileController;
+
+use App\Http\Controllers\HomePageController;
+use App\Http\Controllers\Admin\PackageController;
+
+// ===== Tambahan controller untuk fitur e-ticketing =====
+use App\Http\Controllers\Public\SurveyController;
+use App\Http\Controllers\Admin\AdminOrderController;
+use App\Http\Controllers\MidtransCallbackController;
+use App\Http\Controllers\Admin\SurveyAnalyticsController;
+use App\Http\Controllers\Admin\SatisfactionQuestionController;
+use App\Http\Controllers\Front\PackageController as FrontPackageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -102,5 +103,9 @@ Route::post('/midtrans/confirm', [MidtransCallbackController::class, 'confirmFro
 
 // route API check-in kamu ini sudah oke:
 Route::post('/api/checkin/{order_code}', [CheckInController::class, 'store'])->name('checkin.store');
+
+
+// route Chat Bot
+Route::post('/chatbot', [ChatBotController::class, 'ask'])->name('ask');
 
 require __DIR__ . '/auth.php';

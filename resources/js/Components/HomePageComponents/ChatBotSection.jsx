@@ -1,7 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
+import axios from "axios";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
+
+axios.defaults.withCredentials = true;
+axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
 export default function ChatBotSection({ Send, MessageCircle }) {
-    // State untuk Chatbot (sudah ada)
     const [messages, setMessages] = useState([
         {
             role: "ai",
@@ -9,104 +15,80 @@ export default function ChatBotSection({ Send, MessageCircle }) {
             sources: [],
         },
     ]);
+
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    useRef;
+
     const messagesEndRef = useRef(null);
 
-    // Function to scroll to the bottom of the chat
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const chatContainerRef = useRef(null);
+
+    const inputRef = useRef(null);
+
+    // Auto-scroll
+   const scrollToBottom = () => {
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
     };
 
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
 
-    // Function to call Gemini API
+    // Auto-focus input
+    useEffect(() => {
+        inputRef.current?.focus();
+    }, []);
+
     const sendMessage = async (e) => {
         e.preventDefault();
         if (!input.trim() || isLoading) return;
 
-        const userMessage = input.trim();
+        const userMsg = input.trim();
         setInput("");
         setIsLoading(true);
 
-        // Add user message to state immediately
-        setMessages((prev) => [...prev, { role: "user", text: userMessage }]);
+        // Tampilkan pesan user
+        setMessages(prev => [...prev, { role: "user", text: userMsg }]);
 
         try {
-            const systemPrompt =
-                "Anda adalah pemandu wisata virtual yang ramah dan informatif tentang Kampung Wisata Mutiara di Medan, Sumatera Utara. Jawab semua pertanyaan wisatawan dalam Bahasa Indonesia, berikan detail spesifik tentang tempat wisata tersebut (sejarah, aktivitas, harga tiket jika ada, jam buka, dll.). Jawablah dengan ringkas dan langsung ke intinya. Jika Anda merujuk pada informasi eksternal (dari search grounding), berikan kutipan sumber di akhir jawaban.";
-            const userQuery = userMessage;
-            const apiKey = "";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const apiUrl = "/chatbot";
 
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                // Enable Google Search grounding for accurate, real-time info
-                tools: [{ google_search: {} }],
-                systemInstruction: {
-                    parts: [{ text: systemPrompt }],
-                },
-            };
+            let response = null;
 
-            let response;
-            for (let i = 0; i < 3; i++) {
-                // Exponential backoff retry logic
+            // Retry logic (3x)
+            for (let attempt = 0; attempt < 3; attempt++) {
                 try {
-                    response = await fetch(apiUrl, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(payload),
+                    response = await axios.post(apiUrl, {
+                        message: userMsg,
                     });
-                    if (response.ok) break;
-                } catch (error) {
-                    if (i < 2) {
-                        await new Promise((resolve) =>
-                            setTimeout(resolve, Math.pow(2, i) * 1000)
-                        );
+                    break;
+                } catch (err) {
+                    if (attempt < 2) {
+                        await new Promise(res => setTimeout(res, 1000 * (attempt + 1)));
                     } else {
-                        throw error;
+                        throw err;
                     }
                 }
             }
 
-            const result = await response.json();
-            const candidate = result.candidates?.[0];
-            let aiText =
-                "Maaf, terjadi kesalahan dalam memproses permintaan Anda.";
-            let sources = [];
+            const result = response?.data ?? null;
 
-            if (candidate && candidate.content?.parts?.[0]?.text) {
-                aiText = candidate.content.parts[0].text;
+            const aiText = result?.reply || "Maaf, saya tidak dapat memahami permintaan Anda.";
+            const sources = result?.sources ?? [];
 
-                const groundingMetadata = candidate.groundingMetadata;
-                if (
-                    groundingMetadata &&
-                    groundingMetadata.groundingAttributions
-                ) {
-                    sources = groundingMetadata.groundingAttributions
-                        .map((attribution) => ({
-                            uri: attribution.web?.uri,
-                            title: attribution.web?.title,
-                        }))
-                        .filter((source) => source.uri && source.title);
-                }
-            }
-
-            setMessages((prev) => [
+            setMessages(prev => [
                 ...prev,
-                { role: "ai", text: aiText, sources },
+                { role: "ai", text: aiText, sources }
             ]);
+
         } catch (error) {
-            console.error("API Error:", error);
-            setMessages((prev) => [
+            console.error("Chatbot Error:", error);
+
+            setMessages(prev => [
                 ...prev,
-                {
-                    role: "ai",
-                    text: "Maaf, ada masalah koneksi. Silakan coba lagi.",
-                },
+                { role: "ai", text: "Maaf, ada masalah koneksi. Silakan coba lagi." }
             ]);
         } finally {
             setIsLoading(false);
@@ -127,7 +109,10 @@ export default function ChatBotSection({ Send, MessageCircle }) {
 
                     <div className="bg-gray-100 rounded-xl shadow-2xl flex flex-col h-[500px]">
                         {/* Message History */}
-                        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                        <div
+                        ref={chatContainerRef}
+                        className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth"
+                        >
                             {messages.map((msg, index) => (
                                 <div
                                     key={index}
@@ -137,42 +122,67 @@ export default function ChatBotSection({ Send, MessageCircle }) {
                                             : "justify-start"
                                     }`}
                                 >
-                                    <div
-                                        className={`max-w-[80%] p-3 rounded-xl shadow-md ${
-                                            msg.role === "user"
-                                                ? "bg-sky-500 text-white rounded-br-none"
-                                                : "bg-white text-gray-800 rounded-tl-none"
-                                        }`}
-                                    >
-                                        <p className="whitespace-pre-wrap">
-                                            {msg.text}
-                                        </p>
-                                        {msg.sources &&
-                                            msg.sources.length > 0 && (
-                                                <div className="mt-2 pt-2 border-t border-gray-200 text-xs text-gray-500 italic">
-                                                    <span className="font-semibold">
-                                                        Sumber:
-                                                    </span>
-                                                    {msg.sources.map(
-                                                        (source, i) => (
-                                                            <a
-                                                                key={i}
-                                                                href={
-                                                                    source.uri
-                                                                }
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className="block text-sky-600 hover:underline"
-                                                            >
-                                                                {i + 1}.{" "}
-                                                                {source.title}
-                                                            </a>
-                                                        )
-                                                    )}
-                                                </div>
-                                            )}
-                                    </div>
-                                </div>
+    {/* ============ BUBBLE AI (BARU) ============ */}
+                                    {msg.role === "ai" ? (
+                                        <div className="relative max-w-[85%] bg-white shadow-md border border-gray-200 rounded-xl p-4">
+
+                                            {/* Garis biru kiri */}
+                                            <div className="absolute left-0 top-0 h-full w-1 bg-sky-500 rounded-l-xl"></div>
+
+                                            {/* Header AI */}
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span className="p-2 bg-sky-100 text-sky-600 rounded-full">
+                                                    🤖
+                                                </span>
+                                                <span className="font-semibold text-gray-700">
+                                                    Asisten Wisata
+                                                </span>
+                                            </div>
+
+                                            {/* Isi */}
+                                            <div className="text-gray-800 whitespace-pre-wrap leading-relaxed">
+                                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                    {msg.text}
+                                                </ReactMarkdown>
+                                            </div>
+
+                                            {/* Sumber */}
+                                            {msg.sources &&
+                                                msg.sources.length > 0 && (
+                                                    <div className="mt-3 border-t pt-2 text-xs text-gray-500">
+                                                        <span className="font-semibold">
+                                                            Sumber:
+                                                        </span>
+                                                        {msg.sources.map(
+                                                            (source, i) => (
+                                                                <a
+                                                                    key={i}
+                                                                    href={
+                                                                        source.uri
+                                                                    }
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="block text-sky-600 hover:underline"
+                                                                >
+                                                                    {i + 1}.{" "}
+                                                                    {
+                                                                        source.title
+                                                                    }
+                                                                </a>
+                                                            )
+                                                        )}
+                                                    </div>
+                                                )}
+                                        </div>
+                                    ) : (
+                                        /* ============ BUBBLE USER ============ */
+                                        <div className="max-w-[80%] p-3 rounded-xl shadow-md bg-sky-500 text-white rounded-br-none">
+                                            <p className="whitespace-pre-wrap">
+                                                {msg.text}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>                                
                             ))}
                             {isLoading && (
                                 <div className="flex justify-start">
@@ -197,7 +207,7 @@ export default function ChatBotSection({ Send, MessageCircle }) {
                                                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                                             ></path>
                                         </svg>
-                                        AI sedang berpikir...
+                                        Proses...
                                     </div>
                                 </div>
                             )}
