@@ -6,7 +6,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\ChatBotController;
 use App\Http\Controllers\CheckInController;
-use App\Http\Controllers\GalleriController;
+use App\Http\Controllers\GalleryController;
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomePageController;
@@ -54,11 +54,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('survey/insights', [SurveyAnalyticsController::class, 'index'])->name('survey.insights');
         Route::get('survey/questions/{question}/answers', [SurveyAnalyticsController::class, 'showQuestion'])->name('survey.questions.answers');
         Route::get('survey/questions/{question}/answers/export', [SurveyAnalyticsController::class, 'exportQuestionCsv'])->name('survey.questions.answers.export');
-    });
+
+        // ===== GALERI =====
+        Route::resource('galleri', GalleryController::class)
+        ->parameters(['galleri' => 'galleri']) // penting! agar {galleri} bind ke model Gallery
+        ->except(['show']);
+        });
 
 
-    // ===== GALERI =====
-    Route::resource('galleri', GalleriController::class);
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

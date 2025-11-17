@@ -2,10 +2,10 @@ import React from "react";
 export default function HeroSection() {
     return (
         <>
-            <header
-                id="home"
-                className="relative h-[80vh] flex items-center justify-center text-white overflow-hidden"
-            >
+           <header
+        id="home"
+        className="relative min-h-screen md:h-[92vh] flex flex-col justify-center items-center text-white overflow-hidden"
+      >
                 <img
                     src="https://media.istockphoto.com/id/1256765390/id/foto/rawa-pening-danau-dengan-latar-belakang-gunung.jpg?s=612x612&w=0&k=20&c=UoTm7bdZizAnK1fPpKa--9hVZMG7UWnybf3tOnH8q8I="
                     alt="Pemandangan Kampung Wisata Mutiara"

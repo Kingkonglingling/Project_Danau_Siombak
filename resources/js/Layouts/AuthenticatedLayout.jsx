@@ -261,6 +261,34 @@ function SidebarNav({
                     Survey Questions
                 </SideItem>
             </div>
+
+           {/* Galleri & Activity */}
+            <div>
+                <SectionTitle collapsed={collapsed}>Galleri & Activity</SectionTitle>
+
+                {/* Galleri */}
+                <SideItem
+                    href={route("dashboard.galleri.index")}
+                    active={route().current("dashboard.galleri.*")}
+                    icon={Image}
+                    collapsed={collapsed}
+                    onClick={onNavigate}
+                >
+                    Galleri Foto
+                </SideItem>
+
+                {/* Activity / Aktivitas Wisata */}
+                {/* <SideItem
+                    href={route("dashboard.activity.index")}
+                    active={route().current("dashboard.activity.*")}
+                    icon={ActivityIcon}
+                    collapsed={collapsed}
+                    onClick={onNavigate}
+                >
+                    Aktivitas Wisata
+                </SideItem> */}
+            </div>
+            
         </nav>
     );
 }
@@ -382,6 +410,24 @@ function ReceiptIcon({ className }) {
 }
 
 function QrIcon({ className }) {
+    return (
+        <svg
+            viewBox="0 0 24 24"
+            className={className}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+        >
+            <rect x="3" y="3" width="6" height="6" />
+            <rect x="15" y="3" width="6" height="6" />
+            <rect x="3" y="15" width="6" height="6" />
+            <path d="M15 15h2v2h-2z" />
+            <path d="M21 15h-2v4h-4v2" />
+        </svg>
+    );
+}
+
+function Image({ className }) {
     return (
         <svg
             viewBox="0 0 24 24"
