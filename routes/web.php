@@ -6,12 +6,13 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\ChatBotController;
 use App\Http\Controllers\CheckInController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\GalleriController;
 
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomePageController;
-use App\Http\Controllers\Admin\PackageController;
 
 // ===== Tambahan controller untuk fitur e-ticketing =====
+use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Public\SurveyController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\MidtransCallbackController;
@@ -54,6 +55,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('survey/questions/{question}/answers', [SurveyAnalyticsController::class, 'showQuestion'])->name('survey.questions.answers');
         Route::get('survey/questions/{question}/answers/export', [SurveyAnalyticsController::class, 'exportQuestionCsv'])->name('survey.questions.answers.export');
     });
+
+
+    // ===== GALERI =====
+    Route::resource('galleri', GalleriController::class);
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -107,5 +112,6 @@ Route::post('/api/checkin/{order_code}', [CheckInController::class, 'store'])->n
 
 // route Chat Bot
 Route::post('/chatbot', [ChatBotController::class, 'ask'])->name('ask');
+
 
 require __DIR__ . '/auth.php';
