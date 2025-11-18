@@ -38,14 +38,13 @@ class GalleryController extends Controller
             'image'       => $path,
         ]);
 
-        return redirect()->route('dashboard.galleri.index')
-            ->with('success', 'Foto berhasil ditambahkan ke galeri!');
+        return back()->with('success', 'Foto berhasil ditambahkan ke galeri!');
     }
 
-    public function edit(Gallery $galleri) // ← route model binding otomatis pakai "galleri"
+    public function edit(Gallery $galleri)
     {
         return Inertia::render('Admin/Galleri/Edit', [
-            'galleri' => $galleri
+            'galleri' => $galleri->append('image_url')
         ]);
     }
 
@@ -68,8 +67,7 @@ class GalleryController extends Controller
 
         $galleri->update($data);
 
-        return redirect()->route('dashboard.galleri.index')
-            ->with('success', 'Galeri berhasil diperbarui');
+        return back(303)->with('success', 'Galeri berhasil diperbarui!');
     }
 
     public function destroy(Gallery $galleri)

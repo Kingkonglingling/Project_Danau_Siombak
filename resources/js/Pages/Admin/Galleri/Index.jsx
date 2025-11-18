@@ -1,12 +1,52 @@
 // resources/js/Pages/Dashboard/Galleri/Index.jsx
-import { Head, Link, usePage } from "@inertiajs/react";
+import { Head, Link, usePage, router } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Plus, Pencil, Trash2, Image as ImageIcon, Upload } from "lucide-react";
+import Swal from "sweetalert2";
 
 export default function GalleriIndex({ galleri }) {
     const { flash } = usePage().props;
     const list = galleri?.data ?? [];
     const total = galleri?.total ?? 0;
+
+    const handleDelete = (id) => {
+        Swal.fire({
+            title: "Yakin hapus foto ini?",
+            text: "Foto akan dihapus permanen dan tidak bisa dikembalikan!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya, Hapus!",
+            cancelButtonText: "Batal",
+            reverseButtons: true,
+            heightAuto: false,
+            confirmButtonColor: "#dc2626",
+            cancelButtonColor: "#6b7280",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                router.delete(route("dashboard.galleri.destroy", id), {
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Terhapus!",
+                            text: "Foto berhasil dihapus dari galeri.",
+                            timer: 2000,
+                            showConfirmButton: false,
+                            heightAuto: false,
+                        });
+                    },
+                    onError: () => {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Gagal",
+                            text: "Terjadi kesalahan saat menghapus foto.",
+                            heightAuto: false,
+                        });
+                    },
+                });
+            }
+        });
+    };
 
     return (
         <AuthenticatedLayout>
@@ -89,15 +129,12 @@ export default function GalleriIndex({ galleri }) {
                                         >
                                             <Pencil className="h-4 w-4 text-blue-600" />
                                         </Link>
-                                        <Link
-                                            href={route("dashboard.galleri.destroy", item.id)}
-                                            method="delete"
-                                            as="button"
-                                            className="rounded-lg bg-white/90 p-2 backdrop-blur shadow"
-                                            onClick={(e) => !confirm("Hapus foto ini?") && e.preventDefault()}
+                                        <button
+                                            onClick={() => handleDelete(item.id)}
+                                            className="rounded-lg bg-white/90 p-2 backdrop-blur shadow hover:bg-red-50"
                                         >
                                             <Trash2 className="h-4 w-4 text-red-600" />
-                                        </Link>
+                                        </button>
                                     </div>
 
                                     {item.title && (

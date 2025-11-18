@@ -1,11 +1,12 @@
 // resources/js/Pages/Dashboard/Galleri/Edit.jsx
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, useForm, Link } from "@inertiajs/react";
+import { Head, useForm, Link, router } from "@inertiajs/react";
 import { Upload, X, Image as ImageIcon } from "lucide-react";
 import { useState, useEffect } from "react";
+import Swal from "sweetalert2";
 
 export default function Edit({ galleri }) {
-    const { data, setData, put, processing, errors } = useForm({
+    const { data, setData, processing, errors } = useForm({
         title: galleri.title || "",
         description: galleri.description || "",
         image: null,
@@ -21,17 +22,39 @@ export default function Edit({ galleri }) {
         }
     };
 
-    const submit = (e) => {
+   const submit = (e) => {
         e.preventDefault();
+
         const formData = new FormData();
         formData.append("title", data.title);
         formData.append("description", data.description);
         formData.append("_method", "PUT");
         if (data.image) formData.append("image", data.image);
 
-        put(route("dashboard.galleri.update", galleri.id), {
-            data: formData,
+        router.post(route("dashboard.galleri.update", galleri.id), formData, { 
             forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                Swal.fire({
+                    icon: "success",
+                    title: "Berhasil diperbarui!",
+                    text: "Foto galeri telah diperbarui.",
+                    confirmButtonText: "OK",
+                    heightAuto: false,
+                }).then(() => {
+                    router.visit(route("dashboard.galleri.index"));
+                });
+            },
+            onError: (errs) => {
+                const firstError = Object.values(errs)[0];
+                Swal.fire({
+                    icon: "error",
+                    title: "Gagal memperbarui",
+                    text: firstError || "Terjadi kesalahan",
+                    confirmButtonText: "OK",
+                    heightAuto: false,
+                });
+            },
         });
     };
 

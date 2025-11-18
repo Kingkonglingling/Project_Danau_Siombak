@@ -439,8 +439,8 @@ function Image({ className }) {
             <rect x="3" y="3" width="6" height="6" />
             <rect x="15" y="3" width="6" height="6" />
             <rect x="3" y="15" width="6" height="6" />
-            <path d="M15 15h2v2h-2z" />
-            <path d="M21 15h-2v4h-4v2" />
+            <path d="m21 15-6-6-6 6" />
+            <path d="m15 9-6-6-6 6" />
         </svg>
     );
 }

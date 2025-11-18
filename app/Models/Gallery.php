@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Gallery extends Model
 {
-    protected $table = 'galleries'; // penting jika pakai nama non-standar
+    protected $table = 'galleries'; 
     protected $fillable = ['title', 'description', 'image'];
     protected $appends = ['image_url'];
 

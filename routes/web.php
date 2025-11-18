@@ -57,9 +57,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // ===== GALERI =====
         Route::resource('galleri', GalleryController::class)
-        ->parameters(['galleri' => 'galleri']) // penting! agar {galleri} bind ke model Gallery
+        ->parameters(['galleri' => 'galleri'])
         ->except(['show']);
         });
+
+        // Activity
 
 
 

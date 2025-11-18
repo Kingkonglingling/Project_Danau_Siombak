@@ -1,7 +1,8 @@
 // resources/js/Pages/Dashboard/Galleri/Create.jsx
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, useForm, Link } from "@inertiajs/react";
+import { Head, useForm, Link, router } from "@inertiajs/react";
 import { Upload, X, Image as ImageIcon } from "lucide-react";
+import Swal from "sweetalert2";
 import { useState } from "react";
 
 export default function Create() {
@@ -23,6 +24,7 @@ export default function Create() {
 
     const submit = (e) => {
         e.preventDefault();
+
         const formData = new FormData();
         formData.append("title", data.title);
         formData.append("description", data.description);
@@ -31,6 +33,28 @@ export default function Create() {
         post(route("dashboard.galleri.store"), {
             data: formData,
             forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                Swal.fire({
+                    icon: "success",
+                    title: "Berhasil!",
+                    text: "Foto berhasil ditambahkan ke galeri.",
+                    confirmButtonText: "OK",
+                    heightAuto: false,
+                }).then(() => {
+                    router.visit(route("dashboard.galleri.index"));
+                });
+            },
+            onError: (errs) => {
+                const firstError = Object.values(errs)[0];
+                Swal.fire({
+                    icon: "error",
+                    title: "Gagal menyimpan",
+                    text: firstError || "Terjadi kesalahan",
+                    confirmButtonText: "OK",
+                    heightAuto: false,
+                });
+            },
         });
     };
 
