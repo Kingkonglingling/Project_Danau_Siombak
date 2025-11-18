@@ -7,6 +7,7 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\ChatBotController;
 use App\Http\Controllers\CheckInController;
 use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\ActivityController;
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomePageController;
@@ -59,11 +60,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('galleri', GalleryController::class)
         ->parameters(['galleri' => 'galleri'])
         ->except(['show']);
-        });
+        
 
         // Activity
+        Route::resource('activity', ActivityController::class)
+        ->parameters(['activity' => 'activity'])
+        ->except(['show']);
+    
 
-
+    });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
