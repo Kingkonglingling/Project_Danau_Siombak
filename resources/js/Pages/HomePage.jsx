@@ -19,7 +19,7 @@ import ChatBotSection from "@/Components/HomePageComponents/ChatBotSection";
 import Footer from "@/Components/HomePageComponents/Footer";
 
 // Main Application Component
-export default function HomePage({ auth }) {
+export default function HomePage({ galleries, activities }) {
     return (
         <>
             {/* Title Placeholder (was <Head title="..."> from Inertia) */}
@@ -40,10 +40,11 @@ export default function HomePage({ auth }) {
                     Sailboat={Sailboat}
                     Camera={Camera}
                     Fish={Fish}
+                    activities={activities}
                 />
 
                 {/* Gallery Section */}
-                <GallerySection />
+                <GallerySection galleries={galleries} />
 
                 {/* Map Section (Lokasi) & Call to Action Section (UPDATED) */}
                 <MapSection />

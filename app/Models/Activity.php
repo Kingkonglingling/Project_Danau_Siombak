@@ -20,6 +20,12 @@ class Activity extends Model
     {
         return $this->date?->isoFormat('D MMMM YYYY') ?? '-';
     }
+
+    protected $casts = [
+        'date' => 'date',   
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
     
 }
     

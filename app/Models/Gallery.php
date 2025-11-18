@@ -15,4 +15,5 @@ class Gallery extends Model
     {
         return $this->image ? Storage::url($this->image) : null;
     }
+
 }
