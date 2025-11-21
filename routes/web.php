@@ -84,6 +84,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // homepage
 Route::permanentRedirect('/', '/homepage');
 Route::get('/homepage', [HomePageController::class, 'index'])->name('homepage');
+Route::get('/galeri/{id}', [HomePageController::class, 'showItemGallery'])->name('galeri.show');
 
 // survey
 Route::prefix('homepage')->name('homepage.')->group(function () {

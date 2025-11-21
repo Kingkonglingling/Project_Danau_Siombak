@@ -39,4 +39,19 @@ class HomePageController extends Controller
                 ]),
         ]);
     }
+
+     public function showItemGallery($id)
+    {
+        $gallery = Gallery::findOrFail($id);
+
+        return Inertia::render('ShowGallery', [
+            'gallery' => [
+                'id'          => $gallery->id,
+                'title'       => $gallery->title,
+                'description' => $gallery->description,
+                'image_url'   => $gallery->image_url,
+                'created_at'  => $gallery->created_at->format('d F Y'),
+            ]
+        ]);
+    }
 }

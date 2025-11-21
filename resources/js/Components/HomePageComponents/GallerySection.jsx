@@ -1,63 +1,66 @@
 // resources/js/components/GallerySection.jsx
 import React, { useRef, useEffect, useState } from "react";
+import { router } from "@inertiajs/react";
 
 export default function GallerySection({ galleries = [] }) {
     const scrollRef = useRef(null);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
 
-    // Duplikat foto untuk efek infinite scroll yang mulus
     const photos = galleries.length > 0 ? galleries : Array(12).fill(null);
-    const extendedPhotos = [...photos, ...photos]; // duplikat untuk infinite
 
-    // Hitung lebar satu item (280px + gap 24px = 304px)
     const ITEM_WIDTH = 304;
+    const AUTO_SCROLL_INTERVAL = 3000;
 
+    // --- AUTOSCROLL LOOP TANPA DUPLIKASI ---
     useEffect(() => {
         if (isPaused || photos.length === 0) return;
 
         const interval = setInterval(() => {
             setCurrentIndex((prev) => {
                 const next = prev + 1;
-                // Reset ke tengah array asli saat sudah melewati duplikat
+
+                // Jika sudah sampai terakhir → kembali ke awal
                 if (next >= photos.length) {
-                    // Langsung lompat ke posisi asli tanpa animasi terlihat patah
-                    setTimeout(() => {
-                        scrollRef.current.style.transition = 'none';
-                        scrollRef.current.scrollLeft = 0;
-                        requestAnimationFrame(() => {
-                            scrollRef.current.style.transition = 'scroll-left 0.6s ease-in-out';
-                        });
-                    }, 50);
+                    scrollRef.current.scrollTo({
+                        left: 0,
+                        behavior: "smooth"
+                    });
                     return 0;
                 }
-                return next;
-            });
 
-            // Scroll halus
-            if (scrollRef.current) {
-                scrollRef.current.scrollBy({
-                    left: ITEM_WIDTH,
+                // Scroll ke item berikutnya
+                scrollRef.current.scrollTo({
+                    left: next * ITEM_WIDTH,
                     behavior: "smooth",
                 });
-            }
-        }, 3000);
+
+                return next;
+            });
+        }, AUTO_SCROLL_INTERVAL);
 
         return () => clearInterval(interval);
     }, [isPaused, photos.length]);
 
-    // Update currentIndex berdasarkan scroll position
+    // Update indeks sesuai posisi scroll
     const handleScroll = () => {
         if (!scrollRef.current) return;
         const scrollLeft = scrollRef.current.scrollLeft;
-        const index = Math.round(scrollLeft / ITEM_WIDTH) % photos.length;
+        const index = Math.round(scrollLeft / ITEM_WIDTH);
         setCurrentIndex(index);
+    };
+
+    // Klik gambar → masuk ke halaman detail
+    const handleClickPhoto = (foto) => {
+        if (!foto?.id) return;
+        router.visit(`/galeri/${foto.id}`);
     };
 
     return (
         <section id="gallery" className="py-20 md:py-28 bg-gradient-to-b from-white to-gray-50">
             <div className="max-w-10xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                {/* Judul */}
+
+                {/* JUDUL SECTION */}
                 <div className="text-center mb-16">
                     <h2 className="text-lg font-bold tracking-wider text-sky-600 uppercase">
                         Visual Keindahan
@@ -65,12 +68,9 @@ export default function GallerySection({ galleries = [] }) {
                     <h3 className="mt-4 text-4xl md:text-5xl font-extrabold text-gray-900">
                         Galeri Foto Kampung Wisata Mutiara
                     </h3>
-                    <p className="mt-4 text-lg text-gray-600">
-                        Nikmati momen indah yang bergerak otomatis
-                    </p>
                 </div>
 
-                {/* Gallery Container */}
+                {/* GALLERY */}
                 <div
                     className="relative overflow-hidden"
                     onMouseEnter={() => setIsPaused(true)}
@@ -79,17 +79,17 @@ export default function GallerySection({ galleries = [] }) {
                     <div
                         ref={scrollRef}
                         onScroll={handleScroll}
-                        className="flex gap-6 overflow-x-hidden scroll-smooth pb-8
+                        className="flex gap-6 overflow-x-auto scroll-smooth pb-8 cursor-grab
                             [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden
                             max-w-[1300px] mx-auto"
-                        style={{ scrollBehavior: "smooth" }}
                     >
-                        {extendedPhotos.map((foto, index) => (
+                        {photos.map((foto, index) => (
                             <div
-                                key={`${foto?.id || 'placeholder'}-${index}`}
+                                key={index}
+                                onClick={() => handleClickPhoto(foto)}
                                 className="flex-none w-[280px] relative overflow-hidden rounded-3xl 
                                     shadow-xl bg-gray-100 group/item transition-all duration-500 
-                                    hover:scale-[1.03] hover:shadow-sky-300"
+                                    hover:scale-[1.03] hover:shadow-sky-300 cursor-pointer"
                             >
                                 {foto?.image_url ? (
                                     <>
@@ -132,7 +132,7 @@ export default function GallerySection({ galleries = [] }) {
                         ))}
                     </div>
 
-                    {/* Pagination Dots */}
+                    {/* DOTS PAGINATION */}
                     <div className="flex justify-center gap-2 mt-8">
                         {photos.map((_, index) => (
                             <button
