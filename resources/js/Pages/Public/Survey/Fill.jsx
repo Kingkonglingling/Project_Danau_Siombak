@@ -1,8 +1,6 @@
-import Footer from "@/Components/HomePageComponents/Footer";
-import Navbar from "@/Components/HomePageComponents/Navbar";
-import { Head, useForm, router } from "@inertiajs/react";
+import  AppLayout  from "@/Layouts/AppLayout";
+import { useForm, router } from "@inertiajs/react";
 import { useMemo, useRef, useState } from "react";
-import { MapPin, Sailboat, Menu } from "lucide-react";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 
@@ -105,9 +103,8 @@ export default function Fill({ questions = [] }) {
     }, [clientErrors, errors, requiredIds]);
 
     return (
-        <div className="min-h-screen bg-gray-50 font-sans antialiased flex flex-col">
-            <Head title="Survey Kepuasan" />
-            <Navbar Sailboat={Sailboat} Menu={Menu} />
+
+        <AppLayout title="Survey Kepuasan - Kampung Wisata Mutiara">
 
             <main className="w-full flex-1">
                 <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
@@ -165,8 +162,7 @@ export default function Fill({ questions = [] }) {
                 </div>
             </main>
 
-            <Footer MapPin={MapPin} />
-        </div>
+        </AppLayout>
     );
 }
 

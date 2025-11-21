@@ -1,178 +1,164 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+// resources/js/Components/HomePageComponents/Navbar.jsx
+import React, { useEffect, useRef, useState } from "react";
+import { Link, usePage, router } from "@inertiajs/react";
+import { Menu as MenuIcon } from "lucide-react";
 
-export default function Navbar({ Sailboat, Menu }) {
+export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [hash, setHash] = useState(
-        typeof window !== "undefined" ? window.location.hash : ""
-    );
     const menuRef = useRef(null);
-
-    // Active state: hash (#about, dll) atau path (mis. /homepage/survey)
-    const pathname =
-        typeof window !== "undefined" ? window.location.pathname : "/";
+    const { url } = usePage();
+    const currentPath = url.split("#")[0];
+    const currentHash = url.includes("#") ? url.split("#")[1] : "";
 
     const isActive = (href) => {
         if (!href) return false;
-        if (href.startsWith("#")) return hash === href;
-        // simple path match
-        return pathname === href;
+        if (href.startsWith("#")) {
+            return currentHash === href.slice(1);
+        }
+        return currentPath === href || currentPath === href.replace(/\/$/, "");
     };
 
-    // Listen hash change
-    useEffect(() => {
-        const onHash = () => setHash(window.location.hash);
-        window.addEventListener("hashchange", onHash);
-        return () => window.removeEventListener("hashchange", onHash);
-    }, []);
+    // Kunci: fungsi scroll manual yang pasti jalan!
+    const scrollToSection = (sectionId) => {
+        // Kalau bukan di beranda → pindah dulu ke beranda
+        if (currentPath !== "/") {
+            router.visit("/#" + sectionId, {
+                preserveScroll: false,
+                onSuccess: () => {
+                    setTimeout(() => {
+                        const el = document.getElementById(sectionId);
+                        el?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }, 100);
+                },
+            });
+        } else {
+            // Sudah di beranda → langsung scroll
+            const el = document.getElementById(sectionId);
+            if (el) {
+                el.scrollIntoView({ behavior: "smooth", block: "start" });
+            } else {
+                // Kalau element belum ada (jarang terjadi), reload + hash
+                window.location.href = "/#" + sectionId;
+            }
+        }
+        setIsMenuOpen(false);
+    };
 
-    // Close on outside click
+    // Close menu logic
     useEffect(() => {
         if (!isMenuOpen) return;
-        const onDown = (e) => {
+        const handleClick = (e) => {
             if (menuRef.current && !menuRef.current.contains(e.target)) {
                 setIsMenuOpen(false);
             }
         };
-        document.addEventListener("mousedown", onDown);
-        return () => document.removeEventListener("mousedown", onDown);
+        const handleEsc = (e) => e.key === "Escape" && setIsMenuOpen(false);
+        document.addEventListener("mousedown", handleClick);
+        document.addEventListener("keydown", handleEsc);
+        document.documentElement.style.overflow = "hidden";
+        return () => {
+            document.removeEventListener("mousedown", handleClick);
+            document.removeEventListener("keydown", handleEsc);
+            document.documentElement.style.overflow = "";
+        };
     }, [isMenuOpen]);
 
-    // Close on ESC + lock scroll
-    useEffect(() => {
-        const onKey = (e) => e.key === "Escape" && setIsMenuOpen(false);
-        document.addEventListener("keydown", onKey);
-        // lock scroll
-        const root = document.documentElement;
-        if (isMenuOpen) {
-            const prev = root.style.overflow;
-            root.style.overflow = "hidden";
-            return () => {
-                root.style.overflow = prev;
-                document.removeEventListener("keydown", onKey);
-            };
-        }
-        return () => document.removeEventListener("keydown", onKey);
-    }, [isMenuOpen]);
-
-    const NavLink = ({ href, children, isMobile = false }) => {
+    const NavItem = ({ href, children, mobile = false }) => {
         const active = isActive(href);
-        const base =
-            "transition-colors duration-150 p-2 text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded-md";
+        const base = mobile
+            ? "block w-full text-left px-4 py-3 text-base font-medium rounded-lg transition-colors"
+            : "px-3 py-2 text-sm font-medium rounded-md transition-colors";
+        const style = active ? "text-sky-700 bg-sky-50" : "text-gray-700 hover:text-sky-600 hover:bg-sky-50";
 
-        const desktop =
-            (active ? "text-sky-700" : "text-gray-600 hover:text-sky-600") +
-            " px-2";
-        const mobile =
-            (active
-                ? "text-sky-700 bg-sky-50"
-                : "text-gray-700 hover:bg-sky-50 hover:text-sky-600") +
-            " block px-3 py-2 text-base";
+        // Kalau link hash → pakai scroll manual
+        if (href.startsWith("/#")) {
+            const sectionId = href.split("#")[1];
+            return (
+                <button
+                    onClick={() => scrollToSection(sectionId)}
+                    className={`${base} ${style}`}
+                >
+                    {children}
+                </button>
+            );
+        }
 
+        // Kalau link biasa → pakai Inertia Link
         return (
-            <a
+            <Link
                 href={href}
-                className={`${base} ${isMobile ? mobile : desktop}`}
-                aria-current={active ? "page" : undefined}
-                onClick={() => {
-                    if (isMobile) setIsMenuOpen(false);
-                }}
+                className={`${base} ${style}`}
+                onClick={() => mobile && setIsMenuOpen(false)}
             >
                 {children}
-            </a>
+            </Link>
         );
     };
 
     return (
-        <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-100">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-2">
-                {/* BAR */}
-                <div className="h-16 flex items-center justify-between">
-                    {/* Brand */}
-                    <a href="/" className="flex items-center gap-2 group">
+        <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div className="flex h-16 items-center justify-between">
+                    <Link href="/" className="flex items-center">
                         <img
-                            src="/apple-touch-icon.png" // update path logomu kalau perlu
-                            alt="Siombak"
-                            className="h-9 w-9 sm:h-20 sm:w-20 object-contain"
-                            loading="eager"
-                            decoding="async"
+                            src="/apple-touch-icon.png"
+                            alt="Kampung Wisata Mutiara"
+                            className="h-12 w-12 sm:h-16 sm:w-16 object-contain"
                         />
-                    </a>
+                    </Link>
 
-                    {/* Desktop nav */}
-                    <div className="hidden sm:flex items-center gap-2 md:gap-4 lg:gap-6">
-                        <NavLink href="#home">Beranda</NavLink>
-                        <NavLink href="#about">Tentang</NavLink>
-                        <NavLink href="#attractions">Aktivitas</NavLink>
-                        <NavLink href="#gallery">Galeri</NavLink>
-                        <NavLink href="#location">Lokasi</NavLink>
-                        <NavLink href="#chatbot">Panduan AI</NavLink>
-                        <NavLink href="/homepage/survey">Survey</NavLink>
-                        <a
+                    <div className="hidden sm:flex items-center gap-6">
+                        <NavItem href="/">Beranda</NavItem>
+                        <NavItem href="/#about">Tentang</NavItem>
+                        <NavItem href="/#attractions">Aktivitas</NavItem>
+                        <NavItem href="/#gallery">Galeri</NavItem>
+                        <NavItem href="/#location">Lokasi</NavItem>
+                        <NavItem href="/#chatbot">Panduan AI</NavItem>
+                        <NavItem href="/survey">Survey</NavItem>
+
+                        <Link
                             href="/paket"
-                            className="ml-2 inline-flex items-center justify-center rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                            className="ml-4 rounded-xl bg-sky-600 px-6 py-2.5 text-sm font-bold text-white shadow hover:bg-sky-700 transition"
                         >
                             Lihat Paket
-                        </a>
+                        </Link>
                     </div>
 
-                    {/* Mobile button */}
-                    <div className="sm:hidden">
-                        <button
-                            type="button"
-                            aria-label={isMenuOpen ? "Tutup menu" : "Buka menu"}
-                            aria-expanded={isMenuOpen}
-                            onClick={() => setIsMenuOpen((v) => !v)}
-                            className="inline-flex items-center justify-center p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
-                        >
-                            {isMenuOpen ? (
-                                <span className="block h-6 w-6 leading-none text-xl">
-                                    ✕
-                                </span>
-                            ) : (
-                                <Menu className="h-6 w-6" />
-                            )}
-                        </button>
-                    </div>
+                    <button
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        className="sm:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    >
+                        {isMenuOpen ? (
+                            <span className="text-2xl leading-none">×</span>
+                        ) : (
+                            <MenuIcon className="h-6 w-6" />
+                        )}
+                    </button>
                 </div>
             </div>
 
-            {/* Mobile menu */}
             <div
                 ref={menuRef}
-                className={`sm:hidden overflow-hidden border-t border-slate-100 bg-white/95 backdrop-blur transition-[max-height,opacity] duration-300 ${
+                className={`sm:hidden overflow-hidden transition-all duration-300 border-t border-slate-100 bg-white/95 backdrop-blur-md ${
                     isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
                 }`}
             >
-                <div className="px-3 py-2 space-y-1">
-                    <NavLink href="#home" isMobile>
-                        Beranda
-                    </NavLink>
-                    <NavLink href="#about" isMobile>
-                        Tentang
-                    </NavLink>
-                    <NavLink href="#attractions" isMobile>
-                        Aktivitas
-                    </NavLink>
-                    <NavLink href="#gallery" isMobile>
-                        Galeri
-                    </NavLink>
-                    <NavLink href="#location" isMobile>
-                        Lokasi
-                    </NavLink>
-                    <NavLink href="#chatbot" isMobile>
-                        Panduan AI
-                    </NavLink>
-                    <NavLink href="/homepage/survey" isMobile>
-                        Survey
-                    </NavLink>
+                <div className="px-4 py-4 space-y-1">
+                    <NavItem href="/" mobile>Beranda</NavItem>
+                    <NavItem href="/#about" mobile>Tentang</NavItem>
+                    <NavItem href="/#attractions" mobile>Aktivitas</NavItem>
+                    <NavItem href="/#gallery" mobile>Galeri</NavItem>
+                    <NavItem href="/#location" mobile>Lokasi</NavItem>
+                    <NavItem href="/#chatbot" mobile>Panduan AI</NavItem>
+                    <NavItem href="/survey" mobile>Survey</NavItem>
 
-                    <a
+                    <Link
                         href="/paket"
                         onClick={() => setIsMenuOpen(false)}
-                        className="block w-full text-center mt-3 px-4 py-2 bg-sky-600 text-white text-base font-medium rounded-lg hover:bg-sky-700 transition-colors shadow"
+                        className="block mt-6 w-full text-center rounded-xl bg-sky-600 py-3 text-base font-bold text-white hover:bg-sky-700 transition"
                     >
                         Lihat Paket
-                    </a>
+                    </Link>
                 </div>
             </div>
         </nav>
