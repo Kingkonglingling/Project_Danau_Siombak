@@ -1,8 +1,7 @@
-import { Head, Link, useForm } from "@inertiajs/react";
+import AppLayout from "@/Layouts/AppLayout";
+import { Link, useForm } from "@inertiajs/react";
 import { useState } from "react";
-import { MapPin, Sailboat, Menu } from "lucide-react";
-import Navbar from "@/Components/HomePageComponents/Navbar";
-import Footer from "@/Components/HomePageComponents/Footer";
+
 
 export default function Show({ package: pkg }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -33,9 +32,7 @@ export default function Show({ package: pkg }) {
 
     return (
         <>
-            <Head title={pkg?.title ?? "Paket"} />
-
-            <Navbar Sailboat={Sailboat} Menu={Menu} />
+          <AppLayout title={pkg?.title ?? "Paket"}>
 
             <div className="min-h-screen bg-slate-50">
                 <header className="border-b bg-white">
@@ -309,9 +306,9 @@ export default function Show({ package: pkg }) {
                         </div>
                     </section>
                 </main>
-
-                <Footer MapPin={MapPin} />
             </div>
+
+            </AppLayout>
         </>
     );
 }

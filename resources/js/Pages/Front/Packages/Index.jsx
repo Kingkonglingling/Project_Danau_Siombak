@@ -1,15 +1,14 @@
-import Footer from "@/Components/HomePageComponents/Footer";
-import Navbar from "@/Components/HomePageComponents/Navbar";
-import { Head, Link } from "@inertiajs/react";
-import { MapPin, Sailboat, Menu } from "lucide-react";
+import AppLayout from "@/Layouts/AppLayout";
+import {  Link } from "@inertiajs/react";
+
 
 export default function Index({ packages }) {
-    const list = packages ?? [];
+    const list = packages ?? [];    
 
     return (
         <>
-            <Head title="Paket Wisata" />
-            <Navbar Sailboat={Sailboat} Menu={Menu} />
+
+        <AppLayout title="Paket Wisata">
 
             <div className="min-h-screen bg-slate-50">
 
@@ -96,8 +95,9 @@ export default function Index({ packages }) {
                         ))}
                     </div>
                 </main>
-                <Footer MapPin={MapPin} />
             </div>
+            
+        </AppLayout>
         </>
     );
 }
