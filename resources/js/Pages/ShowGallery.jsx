@@ -55,8 +55,8 @@ export default function ShowGallery({ gallery }) {
           <div className="relative bg-white rounded-[1.5rem] overflow-hidden shadow-sm border border-gray-100">
             <div className="relative aspect-[16/10] md:aspect-[21/9] bg-gray-100 overflow-hidden">
               <img
-                src={item.image_url}
-                alt={item.title}
+                src={gallery.image_url}
+                alt={gallery.title}
                 className="w-full h-full object-cover rounded-xl"
                 onError={(e) => {
                     e.target.src = '/images/no-image.png'; // Fallback dari public
@@ -98,42 +98,6 @@ export default function ShowGallery({ gallery }) {
               )}
             </div>
 
-          </div>
-
-          {/* RIGHT SIDE / SIDEBAR */}
-          <div className="md:col-span-4">
-            <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-24">
-              
-              <h3 className="font-semibold text-gray-900 mb-4">Aksi</h3>
-
-              <div className="flex flex-col gap-3">
-                {/* LIKE BUTTON */}
-                <button 
-                  onClick={() => setIsLiked(!isLiked)}
-                  className={`flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl font-medium transition-all border ${
-                    isLiked 
-                      ? 'bg-pink-50 border-pink-200 text-pink-600' 
-                      : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  <Heart size={20} className={isLiked ? "fill-current" : ""} />
-                  {isLiked ? "Disukai" : "Suka Foto Ini"}
-                </button>
-
-                {/* SHARE BUTTON */}
-                <button className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl font-medium text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 transition-all">
-                  <Share2 size={20} />
-                  Bagikan
-                </button>
-              </div>
-
-              <div className="mt-6 pt-6 border-t border-gray-100">
-                <p className="text-xs text-gray-400 text-center">
-                  Hak Cipta © 2025 Galeri Kita.<br />Semua hak dilindungi.
-                </p>
-              </div>
-
-            </div>
           </div>
 
         </div>
