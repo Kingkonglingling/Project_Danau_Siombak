@@ -46,4 +46,9 @@ class Package extends Model
         $q = $text ? ('?text=' . urlencode($text)) : '';
         return "https://wa.me/{$this->whatsapp_number}{$q}";
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(\App\Models\PackageReview::class);
+    }
 }

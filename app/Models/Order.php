@@ -27,6 +27,7 @@ class Order extends Model
     protected $casts = [
         'paid_at'       => 'datetime',
         'checked_in_at' => 'datetime',
+        'reviewed_at' => 'datetime',
     ];
 
     protected $attributes = [
@@ -61,5 +62,15 @@ class Order extends Model
     public function isCheckedIn(): bool
     {
         return ! is_null($this->checked_in_at);
+    }
+
+    public function review()
+    {
+        return $this->hasOne(PackageReview::class);
+    }
+
+    public function canReview(): bool
+    {
+        return $this->payment_status === 'paid' && is_null($this->reviewed_at);
     }
 }

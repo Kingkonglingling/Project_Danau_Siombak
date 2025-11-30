@@ -88,7 +88,13 @@ class AdminOrderController extends Controller
         ]);
 
         if ($order->payment_status === 'paid') {
+            if (!$order->review_token) {
+                $order->review_token = Str::random(48);
+                $order->save();
+            }
+
             $fonnte->sendTicketLink($order);
+            $fonnte->sendReviewLink($order);
         }
 
         return redirect()
