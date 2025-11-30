@@ -20,6 +20,7 @@ use App\Http\Controllers\MidtransCallbackController;
 use App\Http\Controllers\Admin\SurveyAnalyticsController;
 use App\Http\Controllers\Admin\SatisfactionQuestionController;
 use App\Http\Controllers\Front\PackageController as FrontPackageController;
+use App\Http\Controllers\ReviewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,16 +59,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // ===== GALERI =====
         Route::resource('galleri', GalleryController::class)
-        ->parameters(['galleri' => 'galleri'])
-        ->except(['show']);
-        
+            ->parameters(['galleri' => 'galleri'])
+            ->except(['show']);
+
 
         // Activity
         Route::resource('activity', ActivityController::class)
-        ->parameters(['activity' => 'activity'])
-        ->except(['show']);
-    
-
+            ->parameters(['activity' => 'activity'])
+            ->except(['show']);
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -123,6 +122,10 @@ Route::post('/api/checkin/{order_code}', [CheckInController::class, 'store'])->n
 
 // route Chat Bot
 Route::post('/chatbot', [ChatBotController::class, 'ask'])->name('ask');
+
+// review package
+Route::get('/review/{token}', [ReviewController::class, 'show'])->name('front.review.show');
+Route::post('/review/{token}', [ReviewController::class, 'store'])->name('front.review.store');
 
 
 require __DIR__ . '/auth.php';

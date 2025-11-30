@@ -7,6 +7,7 @@ use App\Services\FonnteService;
 use App\Services\MidtransService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class MidtransCallbackController extends Controller
 {
@@ -47,15 +48,14 @@ class MidtransCallbackController extends Controller
 
         // Mapping status → paid / failed
         if (in_array($transactionStatus, ['capture', 'settlement'])) {
-            // idempotent: jangan update kalau sudah paid
-            if ($order->payment_status !== 'paid') {
-                $order->payment_status = 'paid';
-                $order->paid_at        = now();
-                $order->save();
+            $order->payment_status = 'paid';
+            $order->paid_at = now();
+            $order->save();
 
-                // kirim WA berisi link tiket
-                $fonnte->sendTicketLink($order);
-            }
+            $this->ensureReviewToken($order);
+
+            $fonnte->sendTicketLink($order);
+            $fonnte->sendReviewLink($order);
         } elseif (in_array($transactionStatus, ['cancel', 'expire', 'deny'])) {
             $order->payment_status = 'failed';
             $order->save();
@@ -68,14 +68,10 @@ class MidtransCallbackController extends Controller
      * KONFIRMASI DARI CLIENT (Snap onSuccess)
      * URL: POST /midtrans/confirm
      */
-    public function confirmFromClient(Request $request)
+    public function confirmFromClient(Request $request, FonnteService $fonnte)
     {
         $payload = $request->all();
         Log::info('Midtrans confirmFromClient payload', $payload);
-
-        // IMPORTANT:
-        // Payload dari Snap JS TIDAK punya signature_key,
-        // jadi JANGAN pakai isSignatureValid di sini.
 
         $orderId           = $payload['order_id'] ?? null;
         $transactionStatus = $payload['transaction_status'] ?? null;
@@ -92,19 +88,33 @@ class MidtransCallbackController extends Controller
         }
 
         if (in_array($transactionStatus, ['capture', 'settlement'])) {
+            // Update status paid kalau belum
             if ($order->payment_status !== 'paid') {
                 $order->payment_status = 'paid';
                 $order->paid_at        = now();
                 $order->save();
-
-                // kirim WA (pakai container biar tetap lewat service)
-                app(FonnteService::class)->sendTicketLink($order);
             }
+
+            // Pastikan token review ada
+            $this->ensureReviewToken($order);
+
+            // Kirim WA: tiket + review
+            $fonnte->sendTicketLink($order);
+            $fonnte->sendReviewLink($order);
         } elseif (in_array($transactionStatus, ['cancel', 'expire', 'deny'])) {
             $order->payment_status = 'failed';
             $order->save();
         }
 
         return response()->json(['message' => 'ok']);
+    }
+
+
+    private function ensureReviewToken(Order $order): void
+    {
+        if (!$order->review_token) {
+            $order->review_token = Str::random(48);
+            $order->save();
+        }
     }
 }

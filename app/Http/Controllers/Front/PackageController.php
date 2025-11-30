@@ -29,16 +29,28 @@ class PackageController extends Controller
 
     public function show(string $slug)
     {
-        $p = Package::where('slug', $slug)->firstOrFail();
+        $pkg = Package::where('slug', $slug)->firstOrFail();
+
+        $reviewsQuery = $pkg->reviews()->latest();
 
         return Inertia::render('Front/Packages/Show', [
             'package' => [
-                'id'           => $p->id,
-                'title'        => $p->title,
-                'description'  => $p->description,
-                'image_url'    => $p->image_path ? Storage::url($p->image_path) : null,
-                'adult_price'  => $p->adult_price,
-                'child_price'  => $p->child_price,
+                'id' => $pkg->id,
+                'title' => $pkg->title,
+                'slug' => $pkg->slug,
+                'description' => $pkg->description,
+                'image_url' => $pkg->image_path ? Storage::disk('public')->url($pkg->image_path) : null,
+                'adult_price' => $pkg->adult_price,
+                'child_price' => $pkg->child_price,
+                'reviews' => $reviewsQuery->take(10)->get()->map(fn($r) => [
+                    'id' => $r->id,
+                    'rating' => $r->rating,
+                    'comment' => $r->comment,
+                    'reviewer_name' => $r->reviewer_name,
+                    'created_at' => $r->created_at->toDateString(),
+                ]),
+                'rating_avg' => round((float) $reviewsQuery->avg('rating'), 1),
+                'rating_count' => (int) $reviewsQuery->count(),
             ],
         ]);
     }
