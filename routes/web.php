@@ -8,7 +8,7 @@ use App\Http\Controllers\ChatBotController;
 use App\Http\Controllers\CheckInController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\ActivityController;
-
+use App\Http\Controllers\Admin\AboutSectionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomePageController;
 
@@ -62,6 +62,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->parameters(['galleri' => 'galleri'])
             ->except(['show']);
 
+        // ===== About Section =====
+        Route::get('about', [AboutSectionController::class, 'edit'])->name('about.edit');
+        Route::put('about', [AboutSectionController::class, 'update'])->name('about.update');
 
         // Activity
         Route::resource('activity', ActivityController::class)
