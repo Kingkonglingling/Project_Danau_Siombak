@@ -262,9 +262,11 @@ function SidebarNav({
                 </SideItem>
             </div>
 
-           {/* Galleri & Activity */}
+            {/* Galleri & Activity */}
             <div>
-                <SectionTitle collapsed={collapsed}>Galleri & Activity</SectionTitle>
+                <SectionTitle collapsed={collapsed}>
+                    HomePage Content
+                </SectionTitle>
 
                 {/* Galleri */}
                 <SideItem
@@ -287,8 +289,17 @@ function SidebarNav({
                 >
                     Aktivitas Wisata
                 </SideItem>
+                    
+                <SideItem
+                    href={route("dashboard.about.edit")}
+                    active={route().current("dashboard.about.*")}
+                    icon={AboutIcon}
+                    collapsed={collapsed}
+                    onClick={onNavigate}
+                >
+                    Tentang Kami
+                </SideItem>
             </div>
-            
         </nav>
     );
 }
@@ -454,7 +465,7 @@ function ActivityIcon({ className }) {
             stroke="currentColor"
             strokeWidth="2"
         >
-             <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
             <line x1="16" y1="2" x2="16" y2="6" />
             <line x1="8" y1="2" x2="8" y2="6" />
             <line x1="3" y1="10" x2="21" y2="10" />
@@ -479,4 +490,20 @@ function handleLogout() {
             router.post(route("logout")); // kirim POST ke route logout
         }
     });
+}
+
+function AboutIcon({ className }) {
+    return (
+        <svg
+            viewBox="0 0 24 24"
+            className={className}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+        >
+            <path d="M12 3c5 0 9 2 9 6s-4 6-9 6-9-2-9-6 4-6 9-6z" />
+            <path d="M7 21c1-3 3-5 5-5s4 2 5 5" />
+            <path d="M12 11v-1" />
+        </svg>
+    );
 }
