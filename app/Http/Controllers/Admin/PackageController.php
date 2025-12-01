@@ -22,7 +22,7 @@ class PackageController extends Controller
                 'id' => $p->id,
                 'title' => $p->title,
                 'slug' => $p->slug,
-                'image_url' => $p->image_path ? Storage::url($p->image_path) : null,
+                'image_url' => $p->image_path ? asset($p->image_path) : null,
                 'wa' => $p->whatsapp_number,
                 'adult_price' => $p->adult_price,
                 'child_price' => $p->child_price,
@@ -47,10 +47,23 @@ class PackageController extends Controller
     public function store(StorePackageRequest $req)
     {
         $data = $req->validated();
+
         if ($req->hasFile('image')) {
-            $data['image_path'] = $req->file('image')->store('packages', 'public');
+            $file = $req->file('image');
+
+            // Bikin nama file random / unik
+            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+
+            // Pindahkan ke public/storage/packages
+            $file->move(public_path('storage/packages'), $filename);
+
+            // Simpan path yang nanti gampang dipakai buat asset()
+            $data['image_path'] = 'storage/packages/' . $filename;
+            // Kalau mau cuma 'packages/...' juga boleh, nanti bedanya di URL
         }
+
         Package::create($data);
+
         return back()->with('success', 'Package created');
     }
 
@@ -72,7 +85,7 @@ class PackageController extends Controller
                 'id' => $package->id,
                 'title' => $package->title,
                 'description' => $package->description,
-                'image_url' => $package->image_path ? Storage::url($package->image_path) : null,
+                'image_url' => $package->image_path ? asset($package->image_path) : null,
                 'whatsapp_number' => $package->whatsapp_number,
                 'adult_price' => $package->adult_price,
                 'child_price' => $package->child_price,
@@ -86,11 +99,25 @@ class PackageController extends Controller
     public function update(UpdatePackageRequest $req, Package $package)
     {
         $data = $req->validated();
+
         if ($req->hasFile('image')) {
-            if ($package->image_path) Storage::disk('public')->delete($package->image_path);
-            $data['image_path'] = $req->file('image')->store('packages', 'public');
+            // Hapus file lama kalau ada
+            if ($package->image_path) {
+                $oldPath = public_path($package->image_path); // karena kita simpan 'storage/...'
+                if (file_exists($oldPath)) {
+                    @unlink($oldPath);
+                }
+            }
+
+            $file = $req->file('image');
+            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('storage/packages'), $filename);
+
+            $data['image_path'] = 'storage/packages/' . $filename;
         }
+
         $package->update($data);
+
         return back()->with('success', 'Package updated');
     }
 
@@ -99,8 +126,15 @@ class PackageController extends Controller
      */
     public function destroy(Package $package)
     {
-        if ($package->image_path) Storage::disk('public')->delete($package->image_path);
+        if ($package->image_path) {
+            $path = public_path($package->image_path);
+            if (file_exists($path)) {
+                @unlink($path);
+            }
+        }
+
         $package->delete();
+
         return back()->with('success', 'Package deleted');
     }
 }

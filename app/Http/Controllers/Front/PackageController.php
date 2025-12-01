@@ -16,7 +16,7 @@ class PackageController extends Controller
                 'id'           => $p->id,
                 'title'        => $p->title,
                 'slug'         => $p->slug,
-                'image_url'    => $p->image_path ? Storage::url($p->image_path) : null,
+                'image_url' => $p->image_path ? asset($p->image_path) : null,
                 'adult_price'  => $p->adult_price,
                 'child_price'  => $p->child_price,
             ];
@@ -39,7 +39,7 @@ class PackageController extends Controller
                 'title' => $pkg->title,
                 'slug' => $pkg->slug,
                 'description' => $pkg->description,
-                'image_url' => $pkg->image_path ? Storage::disk('public')->url($pkg->image_path) : null,
+                'image_url' => $pkg->image_path ? asset($pkg->image_path) : null,
                 'adult_price' => $pkg->adult_price,
                 'child_price' => $pkg->child_price,
                 'reviews' => $reviewsQuery->take(10)->get()->map(fn($r) => [
