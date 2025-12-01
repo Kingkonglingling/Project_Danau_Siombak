@@ -1,19 +1,27 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Inertia\Inertia;
 use App\Models\Gallery;
 use App\Models\Activity;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
-
-use Illuminate\Http\Request;
+use App\Models\AboutSection;
 
 class HomePageController extends Controller
 {
     public function index()
-   {
+    {
+        $about = AboutSection::first();
+
         return Inertia::render('HomePage', [
+            'about' => $about ? [
+                'title' => $about->title,
+                'content' => $about->content,
+                'location' => $about->location,
+                'image_url' => $about->image_url,
+            ] : null,
+
             // GALERI — 12 foto terbaru
             'galleries' => Gallery::latest()
                 ->take(12)
@@ -31,8 +39,8 @@ class HomePageController extends Controller
                 ->map(fn($act) => [
                     'id'          => $act->id,
                     'title'       => $act->title,
-                    'description' => $act->description 
-                        ? Str::limit(strip_tags($act->description), 120) 
+                    'description' => $act->description
+                        ? Str::limit(strip_tags($act->description), 120)
                         : 'Aktivitas seru menanti Anda di Kampung Wisata Mutiara.',
                     'date'        => $act->formatted_date,
                     'image_url'   => $act->image_url,
@@ -40,7 +48,7 @@ class HomePageController extends Controller
         ]);
     }
 
-     public function showItemGallery($id)
+    public function showItemGallery($id)
     {
         $gallery = Gallery::findOrFail($id);
 

@@ -16,11 +16,10 @@ import AttractionsSection from "@/Components/HomePageComponents/AttractionsSecti
 import GallerySection from "@/Components/HomePageComponents/GallerySection";
 import MapSection from "@/Components/HomePageComponents/MapSection";
 import ChatBotSection from "@/Components/HomePageComponents/ChatBotSection";
-import  AppLayout  from "@/Layouts/AppLayout";
-
+import AppLayout from "@/Layouts/AppLayout";
 
 // Main Application Component
-export default function HomePage({ galleries, activities }) {
+export default function HomePage({ galleries, activities, about }) {
     const { url } = usePage();
 
     useEffect(() => {
@@ -29,36 +28,39 @@ export default function HomePage({ galleries, activities }) {
             const element = document.getElementById(id);
             if (element) {
                 setTimeout(() => {
-                    element.scrollIntoView({ behavior: "smooth", block: "start" });
+                    element.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                    });
                 }, 150);
             }
         }
     }, [url]);
     return (
         <>
-        <AppLayout title="Beranda - Kampung Wisata Mutiara">
-            {/* Hero Section */}
-            <HeroSection />
+            <AppLayout title="Beranda - Kampung Wisata Mutiara">
+                {/* Hero Section */}
+                <HeroSection />
 
-            {/* About Section (Tentang Kampung Wisata Mutiara) */}
-            <AboutSection MapPin={MapPin} />
+                {/* About Section (Tentang Kampung Wisata Mutiara) */}
+                <AboutSection about={about} MapPin={MapPin} />
 
-            {/* Attractions Section (Aktivitas) */}
-            <AttractionsSection
-                Sailboat={Sailboat}
-                Camera={Camera}
-                Fish={Fish}
-                activities={activities}
-            />
+                {/* Attractions Section (Aktivitas) */}
+                <AttractionsSection
+                    Sailboat={Sailboat}
+                    Camera={Camera}
+                    Fish={Fish}
+                    activities={activities}
+                />
 
-            {/* Gallery Section */}
-            <GallerySection  galleries={galleries} />
+                {/* Gallery Section */}
+                <GallerySection galleries={galleries} />
 
-            {/* Map Section (Lokasi) & Call to Action Section (UPDATED) */}
-            <MapSection />
+                {/* Map Section (Lokasi) & Call to Action Section (UPDATED) */}
+                <MapSection />
 
-            {/* Chatbot AI Section (NEW SECTION) */}
-            <ChatBotSection MessageCircle={MessageCircle} Send={Send} />
+                {/* Chatbot AI Section (NEW SECTION) */}
+                <ChatBotSection MessageCircle={MessageCircle} Send={Send} />
             </AppLayout>
         </>
     );
