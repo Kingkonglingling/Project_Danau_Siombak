@@ -167,7 +167,7 @@ function Card({ pkg, onDelete }) {
                         <img
                             src={pkg.image_url}
                             alt={pkg.title}
-                            className="absolute inset-0 h-full w-full object-cover"
+                            className="absolute inset-0 h-full w-full object-contain"
                         />
                         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-black/0 to-transparent opacity-0 transition group-hover:opacity-100" />
                     </>

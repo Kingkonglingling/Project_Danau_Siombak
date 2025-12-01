@@ -2,10 +2,9 @@ import AppLayout from "@/Layouts/AppLayout";
 import { Link, useForm } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Autoplay, A11y } from "swiper/modules";
+import { Autoplay, A11y } from "swiper/modules";
 
 import "swiper/css";
-import "swiper/css/pagination";
 
 export default function Show({ package: pkg }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -18,6 +17,23 @@ export default function Show({ package: pkg }) {
     });
 
     const [submitting, setSubmitting] = useState(false);
+
+    const [previewOpen, setPreviewOpen] = useState(false);
+    const [zoom, setZoom] = useState(1);
+
+    useEffect(() => {
+        if (!previewOpen) {
+            setZoom(1);
+            return;
+        }
+
+        const onKey = (e) => {
+            if (e.key === "Escape") setPreviewOpen(false);
+        };
+
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, [previewOpen]);
 
     const submit = (e) => {
         e.preventDefault();
@@ -60,11 +76,25 @@ export default function Show({ package: pkg }) {
                                 <div className="mx-auto max-w-7xl">
                                     <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-800">
                                         {pkg.image_url ? (
-                                            <img
-                                                src={pkg.image_url}
-                                                alt={pkg.title}
-                                                className="h-full w-full object-cover"
-                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setZoom(1);
+                                                    setPreviewOpen(true);
+                                                }}
+                                                className="group relative h-full w-full"
+                                            >
+                                                <img
+                                                    src={pkg.image_url}
+                                                    alt={pkg.title}
+                                                    className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+                                                />
+                                                <div className="pointer-events-none absolute inset-0 flex items-end justify-end bg-black/0 p-2 transition group-hover:bg-black/10">
+                                                    <span className="rounded-full bg-black/70 px-2 py-1 text-[11px] text-white">
+                                                        Klik untuk perbesar
+                                                    </span>
+                                                </div>
+                                            </button>
                                         ) : (
                                             <div className="flex h-full w-full items-center justify-center text-sm text-slate-400">
                                                 Tidak ada gambar
@@ -313,6 +343,95 @@ export default function Show({ package: pkg }) {
                             </div>
                         </section>
                     </main>
+
+                    {/* 🔹 Image preview modal + zoom */}
+                    {previewOpen && pkg.image_url && (
+                        <div
+                            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+                            onClick={() => setPreviewOpen(false)}
+                        >
+                            <div
+                                className="relative flex max-h-[85vh] max-w-[90vw] flex-col rounded-xl bg-black/80 p-3 sm:p-4"
+                                onClick={(e) => e.stopPropagation()} // biar klik dalam modal nggak nutup
+                            >
+                                {/* Toolbar atas */}
+                                <div className="flex items-center justify-between gap-2">
+                                    <div className="flex items-center gap-1 text-[11px] text-slate-200">
+                                        <span className="font-semibold line-clamp-1">
+                                            {pkg.title}
+                                        </span>
+                                        <span className="text-slate-400">
+                                            • {Math.round(zoom * 100)}%
+                                        </span>
+                                    </div>
+
+                                    <div className="flex items-center gap-1">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setZoom((z) =>
+                                                    Math.max(
+                                                        0.7,
+                                                        Number(
+                                                            (z - 0.1).toFixed(2)
+                                                        )
+                                                    )
+                                                )
+                                            }
+                                            className="rounded-full bg-slate-800 px-2 py-1 text-xs text-slate-100 hover:bg-slate-700"
+                                        >
+                                            −
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setZoom(1)}
+                                            className="rounded-full bg-slate-800 px-2 py-1 text-xs text-slate-100 hover:bg-slate-700"
+                                        >
+                                            Reset
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setZoom((z) =>
+                                                    Math.min(
+                                                        1.5,
+                                                        Number(
+                                                            (z + 0.1).toFixed(2)
+                                                        )
+                                                    )
+                                                )
+                                            }
+                                            className="rounded-full bg-slate-800 px-2 py-1 text-xs text-slate-100 hover:bg-slate-700"
+                                        >
+                                            +
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setPreviewOpen(false)
+                                            }
+                                            className="ml-1 rounded-full bg-red-600 px-2 py-1 text-xs text-white hover:bg-red-700"
+                                        >
+                                            Tutup ✕
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Area gambar (scrollable kalau kepanjangan) */}
+                                <div className="mt-2 flex flex-1 items-center justify-center overflow-auto">
+                                    <img
+                                        src={pkg.image_url}
+                                        alt={pkg.title}
+                                        className="max-h-[72vh] max-w-full rounded-lg object-contain transition-transform duration-200"
+                                        style={{
+                                            transform: `scale(${zoom})`,
+                                            transformOrigin: "center center",
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </AppLayout>
         </>
@@ -344,7 +463,6 @@ function Stars({ value = 0 }) {
 }
 
 function ReviewSlider({ reviews = [] }) {
-    // Avoid any SSR/hydration weirdness
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
     if (!mounted) return null;
@@ -372,23 +490,18 @@ function ReviewSlider({ reviews = [] }) {
     const list = hasReviews ? reviews : fallback;
 
     return (
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+        <div className="rounded-2xl border border-slate-200 bg-white px-4 py-4 shadow-sm sm:px-5 sm:py-5">
             <div className="flex items-start justify-between gap-3">
                 <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                         Testimoni Pengunjung
                     </p>
-                    <h4 className="mt-1 text-base font-semibold text-slate-900">
+                    <h4 className="mt-1 text-sm font-semibold text-slate-900 sm:text-base">
                         Biar kamu nggak beli tiket “berdasarkan perasaan”
                     </h4>
-                    <p className="mt-1 text-xs text-slate-500">
-                        {hasReviews
-                            ? "Review asli dari pengunjung paket ini."
-                            : "Contoh tampilan (belum ada review)."}
-                    </p>
                 </div>
 
-                <div className="hidden sm:block rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                <div className="hidden sm:block rounded-full bg-slate-50 px-3 py-1 text-[11px] text-slate-600">
                     <span className="font-semibold">
                         {hasReviews ? reviews.length : 0}
                     </span>{" "}
@@ -396,38 +509,40 @@ function ReviewSlider({ reviews = [] }) {
                 </div>
             </div>
 
-            <div className="mt-4">
+            <div className="mt-3">
                 <Swiper
-                    modules={[Pagination, Autoplay, A11y]}
-                    pagination={{ clickable: true }}
+                    modules={[Autoplay, A11y]}
                     autoplay={{ delay: 2600, disableOnInteraction: false }}
                     spaceBetween={12}
-                    slidesPerView={1}
+                    slidesPerView={"auto"}
                     breakpoints={{
-                        640: { slidesPerView: 1.2 },
-                        768: { slidesPerView: 2 },
-                        1024: { slidesPerView: 2.2 },
+                        640: { slidesPerView: "auto" },
+                        768: { slidesPerView: "auto" },
+                        1024: { slidesPerView: "auto" },
                     }}
                 >
                     {list.map((r, idx) => (
-                        <SwiperSlide key={idx}>
-                            <div className="h-full rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
-                                <div className="flex items-start justify-between gap-3">
+                        <SwiperSlide
+                            key={idx}
+                            className="!w-[260px] sm:!w-[320px]"
+                        >
+                            <div className="h-full rounded-2xl bg-slate-50 p-3 ring-1 ring-slate-200">
+                                <div className="flex items-start justify-between gap-2">
                                     <Stars value={r.rating} />
-                                    <span className="text-[11px] text-slate-500">
-                                        {r.created_at ? r.created_at : ""}
+                                    <span className="text-[10px] text-slate-500">
+                                        {r.created_at ?? ""}
                                     </span>
                                 </div>
 
-                                <p className="mt-3 line-clamp-4 text-sm text-slate-700">
+                                <p className="mt-2 line-clamp-3 text-xs text-slate-700 sm:text-sm">
                                     {r.comment || "—"}
                                 </p>
 
-                                <div className="mt-4 flex items-center justify-between">
-                                    <p className="text-xs font-semibold text-slate-900">
+                                <div className="mt-3 flex items-center justify-between">
+                                    <p className="text-[11px] font-semibold text-slate-900">
                                         {r.reviewer_name || "Anonim"}
                                     </p>
-                                    <span className="text-[11px] text-slate-500">
+                                    <span className="text-[10px] text-slate-500">
                                         Verified buyer*
                                     </span>
                                 </div>
@@ -436,7 +551,7 @@ function ReviewSlider({ reviews = [] }) {
                     ))}
                 </Swiper>
 
-                <p className="mt-2 text-[11px] text-slate-400">
+                <p className="mt-2 text-[10px] text-slate-400">
                     *Verified buyer = review dari link review setelah pembelian
                     (kalau kamu pakai sistem token).
                 </p>
