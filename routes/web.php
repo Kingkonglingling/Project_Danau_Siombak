@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\MidtransCallbackController;
 use App\Http\Controllers\Admin\SurveyAnalyticsController;
 use App\Http\Controllers\Admin\SatisfactionQuestionController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Front\PackageController as FrontPackageController;
 use App\Http\Controllers\ReviewController;
 
@@ -29,7 +30,8 @@ use App\Http\Controllers\ReviewController;
 */
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', fn() => Inertia::render('Dashboard'))->name('dashboard');
+    // Route::get('/dashboard', fn() => Inertia::render('Dashboard'))->name('dashboard');
+    Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
     Route::prefix('dashboard')->name('dashboard.')->group(function () {
         Route::get('package-ticket',        [PackageController::class, 'index'])->name('package.index');
